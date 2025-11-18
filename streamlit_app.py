@@ -3,12 +3,13 @@ from deep_translator import GoogleTranslator
 from docx import Document
 from io import BytesIO
 import time
+import math
 
 st.set_page_config(page_title="DOCX Translator", layout="centered")
 st.title("📄🌍 DOCX File Translator")
 st.write("Upload a Word document and translate it to any language.")
 
-# Language codes
+# Supported languages
 languages = {
     "English": "en",
     "Tamil": "ta",
@@ -21,56 +22,84 @@ languages = {
     "Arabic": "ar",
 }
 
-# Upload docx
-uploaded_file = st.file_uploader("Upload DOCX file", type=["docx"])
+# Safe chunking function
+def translate_text(text, translator, max_len=300):
+    text = text.strip()
+    if not text:
+        return text
 
-target_language = st.selectbox("Translate to:", list(languages.keys()))
+    chunks = [text[i:i+max_len] for i in range(0, len(text), max_len)]
+    translated_chunks = []
 
-if uploaded_file and st.button("Translate Document"):
-    # Load document
-    doc = Document(uploaded_file)
-    translator = GoogleTranslator(source='auto', target=languages[target_language])
+    for chunk in chunks:
+        try:
+            translated_chunks.append(translator.translate(chunk))
+        except:
+            translated_chunks.append(chunk)
 
-    paragraphs = doc.paragraphs
-    total = len(paragraphs)
+    return " ".join(translated_chunks)
 
-    st.info(f"Total paragraphs to translate: {total}")
 
+def translate_document(doc, target_code):
+    translator = GoogleTranslator(source='auto', target=target_code)
+
+    # Count total translatable items
+    elements = []
+
+    # Paragraphs
+    for p in doc.paragraphs:
+        elements.append(p)
+
+    # Tables
+    for table in doc.tables:
+        for row in table.rows:
+            for cell in row.cells:
+                for p in cell.paragraphs:
+                    elements.append(p)
+
+    total = len(elements)
     progress = st.progress(0)
     status = st.empty()
+    start = time.time()
 
-    start_time = time.time()
+    # Translate each element
+    for idx, item in enumerate(elements):
+        original = item.text
+        translated = translate_text(original, translator)
+        item.text = translated
 
-    # Translate paragraph-by-paragraph
-    for i, para in enumerate(paragraphs):
-        original = para.text.strip()
-        if original:
-            try:
-                translated_text = translator.translate(original)
-                para.text = translated_text
-            except Exception:
-                para.text = "[Translation Failed]"
-
-        progress.progress((i + 1) / total)
-        elapsed = time.time() - start_time
-        est_total = (elapsed / (i+1)) * total
-        remaining = est_total - elapsed
+        # update progress
+        progress.progress((idx + 1) / total)
+        elapsed = time.time() - start
+        estimated_total = (elapsed / (idx+1)) * total
+        remaining = estimated_total - elapsed
 
         status.text(
-            f"Translating paragraph {i+1}/{total} • "
+            f"Translating {idx+1}/{total} items • "
             f"Elapsed: {int(elapsed)} sec • "
             f"Remaining: {int(remaining)} sec"
         )
 
     progress.progress(1.0)
-    status.text("Translation Complete ✔️")
+    status.text("✔ Translation Completed")
 
-    # Export translated file
+    return doc
+
+
+# Upload DOCX
+uploaded_file = st.file_uploader("Upload DOCX file", type=["docx"])
+target_language = st.selectbox("Translate to:", list(languages.keys()))
+
+if uploaded_file and st.button("Translate Document"):
+    doc = Document(uploaded_file)
+    translated_doc = translate_document(doc, languages[target_language])
+
+    # Output translated doc
     output = BytesIO()
-    doc.save(output)
+    translated_doc.save(output)
     output.seek(0)
 
-    st.success("Your translated document is ready.")
+    st.success("Your translated document is ready!")
 
     st.download_button(
         label="⬇ Download Translated DOCX",
