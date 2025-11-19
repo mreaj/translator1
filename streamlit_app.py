@@ -12,6 +12,11 @@ st.write("Upload a DOCX file, select a language, and download the translated ver
 
 languages = {
     "India – Hindi": "hi",
+    "India – Tamil": "ta",
+    "India – Telugu": "te",
+    "India – Kannada": "kn",
+    "India – Malayalam": "ml",
+    "India – Gujarati": "gu",
     "France – French": "fr",
     "United Kingdom – English": "en",
     "Poland – Polish": "pl",
