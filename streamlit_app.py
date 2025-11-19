@@ -1,37 +1,31 @@
 import streamlit as st
-import io
-import time
+from deep_translator import GoogleTranslator
 from docx import Document
-from googletrans import Translator
 from io import BytesIO
+import time
 
 st.set_page_config(page_title="DOCX Translator", layout="centered")
-st.title("📄🌍 DOCX Translator (GoogleTrans Version)")
-st.write("Upload a DOCX file, select a language, and download the translated version.")
+st.title("📄🌍 DOCX File Translator")
+st.write("Upload a Word document and translate it to any language.")
 
-# ----------------------------
-# Helper translation functions
-# ----------------------------
+# supported languages
+languages = {
+    "Hindi": "hi",
+    "Tamil": "ta",
+    "French": "fr",
+    "German": "de",
+    "Spanish": "es",
+}
 
-def translate_text(text, target_lang, translator):
+uploaded_file = st.file_uploader("Upload DOCX File", type=["docx"])
+target_lang = st.selectbox("Translate To:", options=list(languages.keys()))
+start_button = st.button("Translate Document")
+
+def translate_text(text, target_lang):
     try:
-        return translator.translate(text, dest=target_lang).text
+        return GoogleTranslator(source='auto', target=target_lang).translate(text)
     except:
         return text
-
-
-def translate_paragraph(paragraph, target_lang, translator):
-    for run in paragraph.runs:
-        translated = translate_text(run.text, target_lang, translator)
-        run.text = translated
-
-
-def translate_table(table, target_lang, translator):
-    for row in table.rows:
-        for cell in row.cells:
-            for paragraph in cell.paragraphs:
-                translate_paragraph(paragraph, target_lang, translator)
-
 
 def count_blocks(doc):
     total = len(doc.paragraphs)
@@ -41,36 +35,10 @@ def count_blocks(doc):
                 total += len(cell.paragraphs)
     return total
 
-
-# ----------------------------
-# Streamlit UI
-# ----------------------------
-
-uploaded_file = st.file_uploader("Upload DOCX File", type=["docx"])
-
-target_lang = st.selectbox(
-    "Translate To:",
-    options={
-        "Hindi (hi)": "hi",
-        "Tamil (ta)": "ta",
-        "French (fr)": "fr",
-        "German (de)": "de",
-        "Spanish (es)": "es"
-    }
-)
-
-start_button = st.button("Translate Document")
-
-
-# ----------------------------
-# Translation Logic (Streamlit)
-# ----------------------------
-
 if uploaded_file and start_button:
 
-    # Load DOCX
     doc = Document(uploaded_file)
-    translator = Translator()
+    target = languages[target_lang]
 
     total_blocks = count_blocks(doc)
     completed = 0
@@ -78,50 +46,36 @@ if uploaded_file and start_button:
 
     progress = st.progress(0)
     eta_text = st.empty()
-    status_msg = st.empty()
+    info = st.empty()
 
-    status_msg.info("Translating... Please wait.")
+    info.info("Translating...")
 
-    # Translate paragraphs
-    for paragraph in doc.paragraphs:
-        translate_paragraph(paragraph, target_lang, translator)
+    # paragraphs
+    for para in doc.paragraphs:
+        for run in para.runs:
+            run.text = translate_text(run.text, target)
         completed += 1
+        progress.progress(completed / total_blocks)
 
-        # Update progress
-        percent = completed / total_blocks
-        progress.progress(percent)
-
-        elapsed = time.time() - start_time
-        eta = (elapsed / completed) * (total_blocks - completed)
-        eta_text.write(f"⏳ ETA: {eta:.1f} sec")
-
-    # Translate tables
+    # tables
     for table in doc.tables:
         for row in table.rows:
             for cell in row.cells:
-                for paragraph in cell.paragraphs:
-                    translate_paragraph(paragraph, target_lang, translator)
+                for para in cell.paragraphs:
+                    for run in para.runs:
+                        run.text = translate_text(run.text, target)
                     completed += 1
+                    progress.progress(completed / total_blocks)
 
-                    # Update progress
-                    percent = completed / total_blocks
-                    progress.progress(percent)
+    output = BytesIO()
+    doc.save(output)
+    output.seek(0)
 
-                    elapsed = time.time() - start_time
-                    eta = (elapsed / completed) * (total_blocks - completed)
-                    eta_text.write(f"⏳ ETA: {eta:.1f} sec")
+    info.success("✔ Translation Complete!")
 
-    # Save output
-    output_buffer = BytesIO()
-    doc.save(output_buffer)
-    output_buffer.seek(0)
-
-    status_msg.success("✔ Translation Complete!")
-
-    # Download button
     st.download_button(
-        label="⬇ Download Translated DOCX",
-        data=output_buffer,
-        file_name=f"translated_{target_lang}.docx",
+        "⬇ Download Translated DOCX",
+        data=output,
+        file_name=f"translated_{languages[target_lang]}.docx",
         mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     )
