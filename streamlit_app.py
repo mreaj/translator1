@@ -34,7 +34,7 @@ languages = {
     "Curaçao – Dutch": "nl",
     "Belgium – Dutch": "nl",
     "International Waters – English": "en",
-    "Taiwan – Mandarin Chinese (Traditional)": "zh-TW",
+    "Taiwan – Mandarin Chinese (Traditional)": "zh",
     "Czech Republic – Czech": "cs",
     "Spain – Spanish": "es",
     "Mexico – Spanish": "es",
