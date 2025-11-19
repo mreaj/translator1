@@ -1,109 +1,127 @@
 import streamlit as st
-from deep_translator import GoogleTranslator
-from docx import Document
-from io import BytesIO
+import io
 import time
-import math
+from docx import Document
+from googletrans import Translator
+from io import BytesIO
 
 st.set_page_config(page_title="DOCX Translator", layout="centered")
-st.title("📄🌍 DOCX File Translator")
-st.write("Upload a Word document and translate it to any language.")
+st.title("📄🌍 DOCX Translator (GoogleTrans Version)")
+st.write("Upload a DOCX file, select a language, and download the translated version.")
 
-# Supported languages
-languages = {
-    "English": "en",
-    "Tamil": "ta",
-    "Hindi": "hi",
-    "French": "fr",
-    "Spanish": "es",
-    "German": "de",
-    "Chinese (Simplified)": "zh-cn",
-    "Japanese": "ja",
-    "Arabic": "ar",
-}
+# ----------------------------
+# Helper translation functions
+# ----------------------------
 
-# Safe chunking function
-def translate_text(text, translator, max_len=300):
-    text = text.strip()
-    if not text:
+def translate_text(text, target_lang, translator):
+    try:
+        return translator.translate(text, dest=target_lang).text
+    except:
         return text
 
-    chunks = [text[i:i+max_len] for i in range(0, len(text), max_len)]
-    translated_chunks = []
 
-    for chunk in chunks:
-        try:
-            translated_chunks.append(translator.translate(chunk))
-        except:
-            translated_chunks.append(chunk)
-
-    return " ".join(translated_chunks)
+def translate_paragraph(paragraph, target_lang, translator):
+    for run in paragraph.runs:
+        translated = translate_text(run.text, target_lang, translator)
+        run.text = translated
 
 
-def translate_document(doc, target_code):
-    translator = GoogleTranslator(source='auto', target=target_code)
+def translate_table(table, target_lang, translator):
+    for row in table.rows:
+        for cell in row.cells:
+            for paragraph in cell.paragraphs:
+                translate_paragraph(paragraph, target_lang, translator)
 
-    # Count total translatable items
-    elements = []
 
-    # Paragraphs
-    for p in doc.paragraphs:
-        elements.append(p)
-
-    # Tables
+def count_blocks(doc):
+    total = len(doc.paragraphs)
     for table in doc.tables:
         for row in table.rows:
             for cell in row.cells:
-                for p in cell.paragraphs:
-                    elements.append(p)
-
-    total = len(elements)
-    progress = st.progress(0)
-    status = st.empty()
-    start = time.time()
-
-    # Translate each element
-    for idx, item in enumerate(elements):
-        original = item.text
-        translated = translate_text(original, translator)
-        item.text = translated
-
-        # update progress
-        progress.progress((idx + 1) / total)
-        elapsed = time.time() - start
-        estimated_total = (elapsed / (idx+1)) * total
-        remaining = estimated_total - elapsed
-
-        status.text(
-            f"Translating {idx+1}/{total} items • "
-            f"Elapsed: {int(elapsed)} sec • "
-            f"Remaining: {int(remaining)} sec"
-        )
-
-    progress.progress(1.0)
-    status.text("✔ Translation Completed")
-
-    return doc
+                total += len(cell.paragraphs)
+    return total
 
 
-# Upload DOCX
-uploaded_file = st.file_uploader("Upload DOCX file", type=["docx"])
-target_language = st.selectbox("Translate to:", list(languages.keys()))
+# ----------------------------
+# Streamlit UI
+# ----------------------------
 
-if uploaded_file and st.button("Translate Document"):
+uploaded_file = st.file_uploader("Upload DOCX File", type=["docx"])
+
+target_lang = st.selectbox(
+    "Translate To:",
+    options={
+        "Hindi (hi)": "hi",
+        "Tamil (ta)": "ta",
+        "French (fr)": "fr",
+        "German (de)": "de",
+        "Spanish (es)": "es"
+    }
+)
+
+start_button = st.button("Translate Document")
+
+
+# ----------------------------
+# Translation Logic (Streamlit)
+# ----------------------------
+
+if uploaded_file and start_button:
+
+    # Load DOCX
     doc = Document(uploaded_file)
-    translated_doc = translate_document(doc, languages[target_language])
+    translator = Translator()
 
-    # Output translated doc
-    output = BytesIO()
-    translated_doc.save(output)
-    output.seek(0)
+    total_blocks = count_blocks(doc)
+    completed = 0
+    start_time = time.time()
 
-    st.success("Your translated document is ready!")
+    progress = st.progress(0)
+    eta_text = st.empty()
+    status_msg = st.empty()
 
+    status_msg.info("Translating... Please wait.")
+
+    # Translate paragraphs
+    for paragraph in doc.paragraphs:
+        translate_paragraph(paragraph, target_lang, translator)
+        completed += 1
+
+        # Update progress
+        percent = completed / total_blocks
+        progress.progress(percent)
+
+        elapsed = time.time() - start_time
+        eta = (elapsed / completed) * (total_blocks - completed)
+        eta_text.write(f"⏳ ETA: {eta:.1f} sec")
+
+    # Translate tables
+    for table in doc.tables:
+        for row in table.rows:
+            for cell in row.cells:
+                for paragraph in cell.paragraphs:
+                    translate_paragraph(paragraph, target_lang, translator)
+                    completed += 1
+
+                    # Update progress
+                    percent = completed / total_blocks
+                    progress.progress(percent)
+
+                    elapsed = time.time() - start_time
+                    eta = (elapsed / completed) * (total_blocks - completed)
+                    eta_text.write(f"⏳ ETA: {eta:.1f} sec")
+
+    # Save output
+    output_buffer = BytesIO()
+    doc.save(output_buffer)
+    output_buffer.seek(0)
+
+    status_msg.success("✔ Translation Complete!")
+
+    # Download button
     st.download_button(
         label="⬇ Download Translated DOCX",
-        data=output,
-        file_name=f"translated_{target_language}.docx",
+        data=output_buffer,
+        file_name=f"translated_{target_lang}.docx",
         mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     )
