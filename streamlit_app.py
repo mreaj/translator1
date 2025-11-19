@@ -11,49 +11,16 @@ st.write("Upload a Word document and translate it to any language.")
 
 # Supported languages
 languages = {
-    "India – Hindi": "hi",
-    "France – French": "fr",
-    "United Kingdom – English": "en",
-    "Poland – Polish": "pl",
-    "Sweden – Swedish": "sv",
-    "Finland – Finnish": "fi",
-    "Italy – Italian": "it",
-    "Japan – Japanese": "ja",
-    "Netherlands – Dutch": "nl",
-    "Germany – German": "de",
-    "South Korea – Korean": "ko",
-    "Australia – English": "en",
-    "USA – English": "en",
-    "Greece – Greek": "el",
-    "Philippines – Filipino": "tl",
-    "Egypt – Arabic": "ar",
-    "Austria – German": "de",
-    "South Africa – Afrikaans": "af",
-    "Canada – English": "en",
-    "Ireland – Irish": "ga",
-    "Curaçao – Dutch": "nl",
-    "Belgium – Dutch": "nl",
-    "International Waters – English": "en",
-
-    # 🔥 FIXED Chinese variants
-    "Taiwan – Mandarin Chinese": "zh",
-    "China – Chinese (Simplified)": "zh",
-
-    "Czech Republic – Czech": "cs",
-    "Spain – Spanish": "es",
-    "Mexico – Spanish": "es",
-    "Brazil – Portuguese": "pt",
-    "Turkey – Turkish": "tr",
-    "Argentina – Spanish": "es",
-    "Lithuania – Lithuanian": "lt",
-    "Portugal – Portuguese": "pt",
-    "Romania – Romanian": "ro",
-    "Cyprus – Greek": "el",
-    "Estonia – Estonian": "et",
-    "Denmark – Danish": "da",
-    "Croatia – Croatian": "hr",
+    "English": "en",
+    "Tamil": "ta",
+    "Hindi": "hi",
+    "French": "fr",
+    "Spanish": "es",
+    "German": "de",
+    "Chinese (Simplified)": "zh-cn",
+    "Japanese": "ja",
+    "Arabic": "ar",
 }
-
 
 # FIXED translate function
 def translate_text(text, translator, max_len=300):
