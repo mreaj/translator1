@@ -34,7 +34,11 @@ languages = {
     "Curaçao – Dutch": "nl",
     "Belgium – Dutch": "nl",
     "International Waters – English": "en",
-    "Taiwan – Mandarin Chinese (Traditional)": "zh",
+
+    # 🔥 FIXED Chinese variants
+    "Taiwan – Mandarin Chinese": "zh",
+    "China – Chinese (Simplified)": "zh",
+
     "Czech Republic – Czech": "cs",
     "Spain – Spanish": "es",
     "Mexico – Spanish": "es",
@@ -48,8 +52,6 @@ languages = {
     "Estonia – Estonian": "et",
     "Denmark – Danish": "da",
     "Croatia – Croatian": "hr",
-    # Extra important Chinese variants
-    "China – Chinese (Simplified)": "zh-CN",
 }
 
 
