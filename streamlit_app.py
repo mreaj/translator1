@@ -22,24 +22,18 @@ languages = {
     "Arabic": "ar",
 }
 
-# FIXED translate function
+# Safe chunking function
 def translate_text(text, translator, max_len=300):
+    text = text.strip()
     if not text:
-        return ""
+        return text
 
-    text = str(text).strip()
     chunks = [text[i:i+max_len] for i in range(0, len(text), max_len)]
     translated_chunks = []
 
     for chunk in chunks:
         try:
-            result = translator.translate(chunk)
-
-            # Deep translator returns a string directly
-            if result:
-                translated_chunks.append(str(result))
-            else:
-                translated_chunks.append(chunk)
+            translated_chunks.append(translator.translate(chunk))
         except:
             translated_chunks.append(chunk)
 
@@ -49,6 +43,7 @@ def translate_text(text, translator, max_len=300):
 def translate_document(doc, target_code):
     translator = GoogleTranslator(source='auto', target=target_code)
 
+    # Count total translatable items
     elements = []
 
     # Paragraphs
@@ -67,6 +62,7 @@ def translate_document(doc, target_code):
     status = st.empty()
     start = time.time()
 
+    # Translate each element
     for idx, item in enumerate(elements):
         original = item.text
         translated = translate_text(original, translator)
@@ -98,6 +94,7 @@ if uploaded_file and st.button("Translate Document"):
     doc = Document(uploaded_file)
     translated_doc = translate_document(doc, languages[target_language])
 
+    # Output translated doc
     output = BytesIO()
     translated_doc.save(output)
     output.seek(0)
