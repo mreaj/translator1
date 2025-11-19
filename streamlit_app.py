@@ -10,12 +10,49 @@ st.write("Upload a Word document and translate it to any language.")
 
 # supported languages
 languages = {
-    "Hindi": "hi",
-    "Tamil": "ta",
-    "French": "fr",
-    "German": "de",
-    "Spanish": "es",
+    "India – Hindi": "hi",
+    "France – French": "fr",
+    "United Kingdom – English": "en",
+    "Poland – Polish": "pl",
+    "Sweden – Swedish": "sv",
+    "Finland – Finnish": "fi",
+    "Italy – Italian": "it",
+    "Japan – Japanese": "ja",
+    "Netherlands – Dutch": "nl",
+    "Germany – German": "de",
+    "South Korea – Korean": "ko",
+    "Australia – English": "en",
+    "USA – English": "en",
+    "Greece – Greek": "el",
+    "Philippines – Filipino": "tl",
+    "Egypt – Arabic": "ar",
+    "Austria – German": "de",
+    "South Africa – Afrikaans": "af",
+    "Canada – English": "en",
+    "Ireland – Irish (Gaelic)": "ga",
+    "Curaçao – Dutch": "nl",
+    "Belgium – Dutch": "nl",
+    "International Waters – English": "en",
+
+    # Chinese
+    "Taiwan – Mandarin Chinese": "zh-TW",
+    "China – Chinese (Simplified)": "zh-CN",
+
+    "Czech Republic – Czech": "cs",
+    "Spain – Spanish": "es",
+    "Mexico – Spanish": "es",
+    "Brazil – Portuguese": "pt",
+    "Turkey – Turkish": "tr",
+    "Argentina – Spanish": "es",
+    "Lithuania – Lithuanian": "lt",
+    "Portugal – Portuguese": "pt",
+    "Romania – Romanian": "ro",
+    "Cyprus – Greek": "el",
+    "Estonia – Estonian": "et",
+    "Denmark – Danish": "da",
+    "Croatia – Croatian": "hr",
 }
+
 
 uploaded_file = st.file_uploader("Upload DOCX File", type=["docx"])
 target_lang = st.selectbox("Translate To:", options=list(languages.keys()))
