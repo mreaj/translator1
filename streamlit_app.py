@@ -53,7 +53,7 @@ html, body, [class*="css"] {
 }
 .hero-eyebrow {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.62rem;
+    font-size: 0.82rem;
     font-weight: 500;
     letter-spacing: 0.35em;
     text-transform: uppercase;
@@ -73,7 +73,7 @@ html, body, [class*="css"] {
 }
 .hero-sub {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.72rem;
+    font-size: 0.82rem;
     color: #4a6080;
     letter-spacing: 0.06em;
     margin-top: 0.9rem;
@@ -105,7 +105,7 @@ html, body, [class*="css"] {
 }
 .card-label {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.75rem;
+    font-size: 0.82rem;
     font-weight: 700;
     letter-spacing: 0.22em;
     text-transform: uppercase;
@@ -126,7 +126,7 @@ html, body, [class*="css"] {
 }
 [data-testid="stFileUploader"] label {
     color: #4a6080 !important;
-    font-size: 0.72rem !important;
+    font-size: 0.82rem !important;
     letter-spacing: 0.05em !important;
     text-transform: none !important;
 }
@@ -138,7 +138,7 @@ html, body, [class*="css"] {
     border-radius: 4px !important;
     color: #c8d6e5 !important;
     font-family: 'JetBrains Mono', monospace !important;
-    font-size: 0.8rem !important;
+    font-size: 0.9rem !important;
 }
 [data-testid="stSelectbox"] > div > div:focus-within {
     border-color: #00d2c8 !important;
@@ -148,7 +148,7 @@ html, body, [class*="css"] {
 /* ── Labels ─────────────────────────────────────────────────── */
 label {
     font-family: 'JetBrains Mono', monospace !important;
-    font-size: 0.6rem !important;
+    font-size: 0.8rem !important;
     letter-spacing: 0.15em !important;
     text-transform: uppercase !important;
     color: #4a6080 !important;
@@ -211,7 +211,7 @@ label {
     border: 1px solid #1e2a3a !important;
     border-radius: 4px !important;
     font-family: 'JetBrains Mono', monospace !important;
-    font-size: 0.72rem !important;
+    font-size: 0.82rem !important;
     color: #c8d6e5 !important;
 }
 
@@ -239,7 +239,7 @@ label {
 }
 .stat-label {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.55rem;
+    font-size: 0.82rem;
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: #4a6080;
@@ -253,7 +253,7 @@ label {
     border: 1px solid rgba(0,210,200,0.25);
     color: #00d2c8;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.65rem;
+    font-size: 0.82rem;
     letter-spacing: 0.12em;
     padding: 0.2rem 0.6rem;
     border-radius: 2px;
@@ -264,7 +264,7 @@ label {
 .footer {
     text-align: center;
     padding: 2.5rem 0 1rem;
-    font-size: 0.58rem;
+    font-size: 0.82rem;
     letter-spacing: 0.1em;
     color: #1e2a3a;
     text-transform: uppercase;
