@@ -555,9 +555,9 @@ def format_eta(seconds):
 # ======================
 st.markdown("""
 <div class="hero">
-    <div class="hero-eyebrow">⟡ Wind Energy · HSE Documents</div>
-    <div class="hero-title">WIND<span>DOC</span><br>TRANSLATOR</div>
-    <div class="hero-sub">Industry-accurate · 40+ languages · Format preserved</div>
+    <div class="hero-eyebrow">⟡ Global HSE · HSE Notifications</div>
+    <div class="hero-title">Notification<span>DOC</span><br>TRANSLATOR</div>
+    <div class="hero-sub"> 20+ languages · Format preserved</div>
     <hr class="hero-rule">
 </div>
 """, unsafe_allow_html=True)
