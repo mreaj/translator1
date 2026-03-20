@@ -7,7 +7,7 @@ import time
 import re
 
 st.set_page_config(
-    page_title="Notification Translator",
+    page_title="WindDoc Translator",
     page_icon="🌬️",
     layout="centered",
     initial_sidebar_state="collapsed",
@@ -138,7 +138,7 @@ html, body, [class*="css"] {
     border-radius: 4px !important;
     color: #c8d6e5 !important;
     font-family: 'JetBrains Mono', monospace !important;
-    font-size: 0.9rem !important;
+    font-size: 0.82rem !important;
 }
 [data-testid="stSelectbox"] > div > div:focus-within {
     border-color: #00d2c8 !important;
@@ -148,7 +148,7 @@ html, body, [class*="css"] {
 /* ── Labels ─────────────────────────────────────────────────── */
 label {
     font-family: 'JetBrains Mono', monospace !important;
-    font-size: 0.8rem !important;
+    font-size: 0.82rem !important;
     letter-spacing: 0.15em !important;
     text-transform: uppercase !important;
     color: #4a6080 !important;
@@ -501,6 +501,9 @@ def run_fmt_key(run):
 def translate_paragraph(para, target_lang):
     if not para.runs:
         return
+    # Skip paragraphs whose XML contains an embedded image (e.g. logo)
+    if element_has_image(para._element):
+        return
     groups = []
     for run in para.runs:
         key = run_fmt_key(run)
@@ -518,11 +521,76 @@ def translate_paragraph(para, target_lang):
             r.text = ""
 
 
+def element_has_image(xml_element):
+    """Return True if this XML element contains a logo / image node."""
+    for tag in ("w:drawing", "v:imagedata", "w:pict", "v:shape"):
+        if next(xml_element.iter(qn(tag)), None) is not None:
+            return True
+    return False
+
+
 def translate_xml_runs(xml_element, target_lang):
+    """Translate all w:t run nodes, skipping any container that holds an image."""
+    if element_has_image(xml_element):
+        return
     for t_node in xml_element.iter(qn("w:t")):
         original = t_node.text or ""
         if original.strip():
             t_node.text = safe_translate(original, target_lang)
+
+
+def lock_table_layout(table):
+    """
+    Freeze every table so translated text cannot shift columns or rows:
+      - Sets table layout to 'fixed'  (w:tblLayout type="fixed")
+      - Locks each row height to exact (w:trHeight hRule="exact")
+      - Locks each cell width to exact (w:tcW type="dxa")
+    This prevents longer translated text from pushing the logo cell.
+    """
+    from lxml import etree
+
+    tbl = table._tbl
+
+    # ── 1. Force fixed table layout ───────────────────────────────────────
+    tblPr = tbl.find(qn("w:tblPr"))
+    if tblPr is None:
+        tblPr = etree.SubElement(tbl, qn("w:tblPr"))
+    tblLayout = tblPr.find(qn("w:tblLayout"))
+    if tblLayout is None:
+        tblLayout = etree.SubElement(tblPr, qn("w:tblLayout"))
+    tblLayout.set(qn("w:type"), "fixed")
+
+    # ── 2. Lock every row height and cell width ───────────────────────────
+    for row in table.rows:
+        tr = row._tr
+        trPr = tr.find(qn("w:trPr"))
+        if trPr is None:
+            trPr = etree.SubElement(tr, qn("w:trPr"))
+
+        # Lock row height to its current value (exact)
+        trHeight = trPr.find(qn("w:trHeight"))
+        if trHeight is None:
+            # Read current rendered height or fall back to a safe default
+            h_val = trHeight.get(qn("w:val"), "567") if trHeight is not None else "567"
+            trHeight = etree.SubElement(trPr, qn("w:trHeight"))
+            trHeight.set(qn("w:val"), h_val)
+        trHeight.set(qn("w:hRule"), "exact")
+
+        for cell in row.cells:
+            tc = cell._tc
+            tcPr = tc.find(qn("w:tcPr"))
+            if tcPr is None:
+                tcPr = etree.SubElement(tc, qn("w:tcPr"))
+
+            # Lock cell width to its current value
+            tcW = tcPr.find(qn("w:tcW"))
+            if tcW is not None:
+                tcW.set(qn("w:type"), "dxa")   # twips — fixed unit
+            else:
+                # Fall back: set a sensible default width
+                tcW = etree.SubElement(tcPr, qn("w:tcW"))
+                tcW.set(qn("w:w"), "2000")
+                tcW.set(qn("w:type"), "dxa")
 
 
 def count_all_blocks(doc):
@@ -555,9 +623,9 @@ def format_eta(seconds):
 # ======================
 st.markdown("""
 <div class="hero">
-    <div class="hero-eyebrow">⟡ Global HSE · HSE Notifications</div>
-    <div class="hero-title">Notification<span>DOC</span><br>TRANSLATOR</div>
-    <div class="hero-sub"> 20+ languages · Format preserved</div>
+    <div class="hero-eyebrow">⟡ Wind Energy · HSE Documents</div>
+    <div class="hero-title">WIND<span>DOC</span><br>TRANSLATOR</div>
+    <div class="hero-sub">Industry-accurate · 40+ languages · Format preserved</div>
     <hr class="hero-rule">
 </div>
 """, unsafe_allow_html=True)
@@ -624,7 +692,7 @@ if run_btn and uploaded_file:
         remaining = total_blocks - c
         if c > 0 and remaining > 0:
             eta_text.markdown(
-                f'<span style="font-family:JetBrains Mono,monospace;font-size:0.68rem;'
+                f'<span style="font-family:JetBrains Mono,monospace;font-size:0.82rem;'
                 f'color:#4a6080;">⏳ {int(pct*100)}% · ETA {format_eta((elapsed/c)*remaining)}'
                 f' · {c}/{total_blocks} blocks</span>',
                 unsafe_allow_html=True,
@@ -662,16 +730,33 @@ if run_btn and uploaded_file:
                 pass
 
     # 4. Text boxes (w:txbx) — HSE form fields
+    # Each text box is checked individually: boxes containing the logo are skipped,
+    # while boxes containing text fields (Date, From, Re: etc.) are translated.
     for txbx in doc.element.iter(qn("w:txbx")):
-        translate_xml_runs(txbx, target)
+        if not element_has_image(txbx):
+            translate_xml_runs(txbx, target)
         for _ in txbx.iter(qn("w:p")):
             tick()
 
-    # 5. Content controls (w:sdt)
+    # 5. Content controls (w:sdt) — structured fields
     for sdt in doc.element.iter(qn("w:sdt")):
-        translate_xml_runs(sdt, target)
+        if not element_has_image(sdt):
+            translate_xml_runs(sdt, target)
         for _ in sdt.iter(qn("w:p")):
             tick()
+
+    # 6. Lock all table layouts so translated text cannot shift the logo cell
+    for table in doc.tables:
+        lock_table_layout(table)
+    for section in doc.sections:
+        for hdr in [section.header, section.footer,
+                    section.even_page_header, section.even_page_footer,
+                    section.first_page_header, section.first_page_footer]:
+            try:
+                for table in hdr.tables:
+                    lock_table_layout(table)
+            except Exception:
+                pass
 
     # Save
     output = BytesIO()
@@ -701,6 +786,6 @@ elif run_btn and not uploaded_file:
 # ======================
 st.markdown("""
 <div class="footer">
-    Notification Translator · Vesatas Wind Technologies · Global HSE
+    WindDoc Translator · Wind Energy HSE · Powered by Google Translate + Industry Glossary
 </div>
 """, unsafe_allow_html=True)
