@@ -7,7 +7,7 @@ import time
 import re
 
 st.set_page_config(
-    page_title="WindDoc Translator",
+    page_title="Notification Translator",
     page_icon="🌬️",
     layout="centered",
     initial_sidebar_state="collapsed",
