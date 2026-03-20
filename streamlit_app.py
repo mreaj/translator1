@@ -701,6 +701,6 @@ elif run_btn and not uploaded_file:
 # ======================
 st.markdown("""
 <div class="footer">
-    WindDoc Translator · Wind Energy HSE · Powered by Google Translate + Industry Glossary
+    Notification Translator · Vesatas Wind Technologies · Global HSE
 </div>
 """, unsafe_allow_html=True)
