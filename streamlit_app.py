@@ -7,7 +7,7 @@ import time
 import re
 
 st.set_page_config(
-    page_title="WindDoc Translator",
+    page_title="Notification Translator",
     page_icon="🌬️",
     layout="centered",
     initial_sidebar_state="collapsed",
@@ -623,9 +623,9 @@ def format_eta(seconds):
 # ======================
 st.markdown("""
 <div class="hero">
-    <div class="hero-eyebrow">⟡ Wind Energy · HSE Documents</div>
-    <div class="hero-title">WIND<span>DOC</span><br>TRANSLATOR</div>
-    <div class="hero-sub">Industry-accurate · 40+ languages · Format preserved</div>
+    <div class="hero-eyebrow">⟡ Global HSE · HSE Documents</div>
+    <div class="hero-title">NOTIFICATIONS<span>DOC</span><br>TRANSLATOR</div>
+    <div class="hero-sub">Industry-accurate · 20+ languages · Format preserved</div>
     <hr class="hero-rule">
 </div>
 """, unsafe_allow_html=True)
@@ -681,7 +681,7 @@ if run_btn and uploaded_file:
     progress   = st.progress(0)
     eta_text   = st.empty()
     status_msg = st.empty()
-    status_msg.info("⚙ Translating — wind terminology will be corrected automatically…")
+    status_msg.info("⚙ Translating — all terminology will be corrected automatically…")
 
     def tick():
         state["completed"] += 1
@@ -765,7 +765,7 @@ if run_btn and uploaded_file:
 
     progress.progress(1.0)
     eta_text.empty()
-    status_msg.success("✓ Translation complete — wind terminology corrected")
+    status_msg.success("✓ Translation completed")
 
     safe_name = re.sub(r'[^\w\-]', '_', target_label)
 
@@ -786,6 +786,6 @@ elif run_btn and not uploaded_file:
 # ======================
 st.markdown("""
 <div class="footer">
-    WindDoc Translator · Wind Energy HSE · Powered by Google Translate + Industry Glossary
+    NotificationsDoc Translator · Global HSE · HSEN
 </div>
 """, unsafe_allow_html=True)
