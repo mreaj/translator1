@@ -15,8 +15,6 @@ st.set_page_config(
 
 # ======================
 # CUSTOM CSS — Dark industrial / wind-energy aesthetic
-# Fonts: Bebas Neue (display) + JetBrains Mono (body)
-# Palette: near-black bg, electric cyan accent, slate greys
 # ======================
 st.markdown("""
 <style>
@@ -86,7 +84,68 @@ html, body, [class*="css"] {
     border: none;
 }
 
-/* ── Upload card ────────────────────────────────────────────── */
+/* ── Mode selection cards ───────────────────────────────────── */
+.mode-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+    margin: 2rem 0;
+}
+.mode-card {
+    background: #111620;
+    border: 1px solid #1e2a3a;
+    border-radius: 8px;
+    padding: 2.2rem 1.8rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.mode-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #00d2c8, #005f8a, transparent);
+}
+.mode-card:hover {
+    border-color: #00d2c8;
+    box-shadow: 0 0 24px rgba(0,210,200,0.08);
+}
+.mode-icon {
+    font-size: 2.8rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+.mode-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing: 0.1em;
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+}
+.mode-desc {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: #4a6080;
+    letter-spacing: 0.06em;
+    line-height: 1.6;
+}
+.mode-cta {
+    display: inline-block;
+    margin-top: 1.2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #00d2c8;
+    border: 1px solid rgba(0,210,200,0.3);
+    padding: 0.3rem 0.8rem;
+    border-radius: 2px;
+}
+
+/* ── Upload / paragraph card ────────────────────────────────── */
 .card {
     background: #111620;
     border: 1px solid #1e2a3a;
@@ -113,6 +172,50 @@ html, body, [class*="css"] {
     margin-bottom: 0.8rem;
 }
 
+/* ── Result box ─────────────────────────────────────────────── */
+.result-box {
+    background: #0d1117;
+    border: 1px solid #1e3a50;
+    border-radius: 6px;
+    padding: 1.4rem 1.6rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.88rem;
+    color: #c8d6e5;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin-top: 0.8rem;
+    position: relative;
+}
+.result-box::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #00d2c8, transparent);
+}
+.result-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #00d2c8;
+    margin-bottom: 0.5rem;
+}
+
+/* ── Back link ──────────────────────────────────────────────── */
+.back-link {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #4a6080;
+    cursor: pointer;
+    display: inline-block;
+    margin-bottom: 1.5rem;
+}
+
 /* ── File uploader ──────────────────────────────────────────── */
 [data-testid="stFileUploader"] {
     background: #0d1117 !important;
@@ -129,6 +232,22 @@ html, body, [class*="css"] {
     font-size: 0.82rem !important;
     letter-spacing: 0.05em !important;
     text-transform: none !important;
+}
+
+/* ── Textarea ───────────────────────────────────────────────── */
+[data-testid="stTextArea"] textarea {
+    background: #0d1117 !important;
+    border: 1.5px solid #1e3a50 !important;
+    border-radius: 6px !important;
+    color: #c8d6e5 !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.85rem !important;
+    line-height: 1.7 !important;
+    caret-color: #00d2c8;
+}
+[data-testid="stTextArea"] textarea:focus {
+    border-color: #00d2c8 !important;
+    box-shadow: 0 0 0 2px rgba(0,210,200,0.12) !important;
 }
 
 /* ── Selectbox ──────────────────────────────────────────────── */
@@ -154,7 +273,7 @@ label {
     color: #4a6080 !important;
 }
 
-/* ── Translate button ───────────────────────────────────────── */
+/* ── Translate / action buttons ─────────────────────────────── */
 .stButton > button {
     width: 100% !important;
     background: linear-gradient(135deg, #00d2c8 0%, #0099b8 100%) !important;
@@ -205,7 +324,7 @@ label {
     height: 4px !important;
 }
 
-/* ── Info / success / warning alerts ───────────────────────── */
+/* ── Alerts ─────────────────────────────────────────────────── */
 .stAlert {
     background: #111620 !important;
     border: 1px solid #1e2a3a !important;
@@ -244,20 +363,6 @@ label {
     text-transform: uppercase;
     color: #4a6080;
     margin-top: 0.3rem;
-}
-
-/* ── Language badge ─────────────────────────────────────────── */
-.lang-badge {
-    display: inline-block;
-    background: rgba(0,210,200,0.08);
-    border: 1px solid rgba(0,210,200,0.25);
-    color: #00d2c8;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.82rem;
-    letter-spacing: 0.12em;
-    padding: 0.2rem 0.6rem;
-    border-radius: 2px;
-    margin-bottom: 1rem;
 }
 
 /* ── Footer ─────────────────────────────────────────────────── */
@@ -501,7 +606,6 @@ def run_fmt_key(run):
 def translate_paragraph(para, target_lang):
     if not para.runs:
         return
-    # Skip paragraphs whose XML contains an embedded image (e.g. logo)
     if element_has_image(para._element):
         return
     groups = []
@@ -522,7 +626,6 @@ def translate_paragraph(para, target_lang):
 
 
 def element_has_image(xml_element):
-    """Return True if this XML element contains a logo / image node."""
     for tag in ("w:drawing", "v:imagedata", "w:pict", "v:shape"):
         if next(xml_element.iter(qn(tag)), None) is not None:
             return True
@@ -530,7 +633,6 @@ def element_has_image(xml_element):
 
 
 def translate_xml_runs(xml_element, target_lang):
-    """Translate all w:t run nodes, skipping any container that holds an image."""
     if element_has_image(xml_element):
         return
     for t_node in xml_element.iter(qn("w:t")):
@@ -540,18 +642,8 @@ def translate_xml_runs(xml_element, target_lang):
 
 
 def lock_table_layout(table):
-    """
-    Freeze every table so translated text cannot shift columns or rows:
-      - Sets table layout to 'fixed'  (w:tblLayout type="fixed")
-      - Locks each row height to exact (w:trHeight hRule="exact")
-      - Locks each cell width to exact (w:tcW type="dxa")
-    This prevents longer translated text from pushing the logo cell.
-    """
     from lxml import etree
-
     tbl = table._tbl
-
-    # ── 1. Force fixed table layout ───────────────────────────────────────
     tblPr = tbl.find(qn("w:tblPr"))
     if tblPr is None:
         tblPr = etree.SubElement(tbl, qn("w:tblPr"))
@@ -559,35 +651,26 @@ def lock_table_layout(table):
     if tblLayout is None:
         tblLayout = etree.SubElement(tblPr, qn("w:tblLayout"))
     tblLayout.set(qn("w:type"), "fixed")
-
-    # ── 2. Lock every row height and cell width ───────────────────────────
     for row in table.rows:
         tr = row._tr
         trPr = tr.find(qn("w:trPr"))
         if trPr is None:
             trPr = etree.SubElement(tr, qn("w:trPr"))
-
-        # Lock row height to its current value (exact)
         trHeight = trPr.find(qn("w:trHeight"))
         if trHeight is None:
-            # Read current rendered height or fall back to a safe default
-            h_val = trHeight.get(qn("w:val"), "567") if trHeight is not None else "567"
+            h_val = "567"
             trHeight = etree.SubElement(trPr, qn("w:trHeight"))
             trHeight.set(qn("w:val"), h_val)
         trHeight.set(qn("w:hRule"), "exact")
-
         for cell in row.cells:
             tc = cell._tc
             tcPr = tc.find(qn("w:tcPr"))
             if tcPr is None:
                 tcPr = etree.SubElement(tc, qn("w:tcPr"))
-
-            # Lock cell width to its current value
             tcW = tcPr.find(qn("w:tcW"))
             if tcW is not None:
-                tcW.set(qn("w:type"), "dxa")   # twips — fixed unit
+                tcW.set(qn("w:type"), "dxa")
             else:
-                # Fall back: set a sensible default width
                 tcW = etree.SubElement(tcPr, qn("w:tcW"))
                 tcW.set(qn("w:w"), "2000")
                 tcW.set(qn("w:type"), "dxa")
@@ -619,7 +702,13 @@ def format_eta(seconds):
 
 
 # ======================
-# UI — HERO
+# SESSION STATE
+# ======================
+if "mode" not in st.session_state:
+    st.session_state.mode = None   # None = landing, "docx" or "paragraph"
+
+# ======================
+# HERO (always shown)
 # ======================
 st.markdown("""
 <div class="hero">
@@ -631,155 +720,221 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ======================
-# UI — UPLOAD CARD
+# PAGE: LANDING — mode selector
 # ======================
-st.markdown('<div class="card"><div class="card-label">01 — Upload Document</div>', unsafe_allow_html=True)
-uploaded_file = st.file_uploader("Drop your DOCX here", type=["docx"], label_visibility="collapsed")
-st.markdown('</div>', unsafe_allow_html=True)
-
-# ======================
-# UI — LANGUAGE CARD
-# ======================
-st.markdown('<div class="card"><div class="card-label">02 — Select Target Language</div>', unsafe_allow_html=True)
-target_label = st.selectbox("Language", list(languages.keys()), label_visibility="collapsed")
-st.markdown('</div>', unsafe_allow_html=True)
-
-# ======================
-# UI — TRANSLATE BUTTON
-# ======================
-run_btn = st.button("▶  TRANSLATE DOCUMENT")
-
-# ======================
-# TRANSLATION LOGIC
-# ======================
-if run_btn and uploaded_file:
-    target = languages[target_label]
-    doc    = Document(uploaded_file)
-
-    total_blocks = count_all_blocks(doc)
-    state        = {"completed": 0}   # mutable dict avoids nonlocal requirement
-    start_time   = time.time()
-
-    # Stats row
-    st.markdown(f"""
-    <div class="stats-row">
-        <div class="stat-box">
-            <div class="stat-number">{total_blocks}</div>
-            <div class="stat-label">Blocks</div>
+if st.session_state.mode is None:
+    st.markdown("""
+    <div style="text-align:center; margin-bottom: 0.4rem;">
+        <span style="font-family:'JetBrains Mono',monospace; font-size:0.82rem;
+              letter-spacing:0.22em; text-transform:uppercase; color:#4a6080;">
+            Select translation mode
+        </span>
+    </div>
+    <div class="mode-grid">
+        <div class="mode-card">
+            <span class="mode-icon">📄</span>
+            <div class="mode-title">DOCX Document</div>
+            <div class="mode-desc">Upload a Word document.<br>Full format preserved —<br>tables, headers, footers.</div>
+            <div class="mode-cta">→ Upload file</div>
         </div>
-        <div class="stat-box">
-            <div class="stat-number">{len(WIND_GLOSSARY.get(target, {}))} </div>
-            <div class="stat-label">Glossary Terms</div>
-        </div>
-        <div class="stat-box">
-            <div class="stat-number">{target.upper()}</div>
-            <div class="stat-label">Target Lang</div>
+        <div class="mode-card">
+            <span class="mode-icon">✏️</span>
+            <div class="mode-title">Paragraph / Text</div>
+            <div class="mode-desc">Paste any text or excerpt.<br>Instant translation with<br>wind-industry glossary.</div>
+            <div class="mode-cta">→ Paste text</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-    progress   = st.progress(0)
-    eta_text   = st.empty()
-    status_msg = st.empty()
-    status_msg.info("⚙ Translating — all terminology will be corrected automatically…")
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("📄  TRANSLATE A DOCX FILE"):
+            st.session_state.mode = "docx"
+            st.rerun()
+    with col2:
+        if st.button("✏️  TRANSLATE A PARAGRAPH"):
+            st.session_state.mode = "paragraph"
+            st.rerun()
 
-    def tick():
-        state["completed"] += 1
-        c   = state["completed"]
-        pct = min(c / total_blocks, 1.0)
-        progress.progress(pct)
-        elapsed   = time.time() - start_time
-        remaining = total_blocks - c
-        if c > 0 and remaining > 0:
-            eta_text.markdown(
-                f'<span style="font-family:JetBrains Mono,monospace;font-size:0.82rem;'
-                f'color:#4a6080;">⏳ {int(pct*100)}% · ETA {format_eta((elapsed/c)*remaining)}'
-                f' · {c}/{total_blocks} blocks</span>',
-                unsafe_allow_html=True,
-            )
+# ======================
+# PAGE: PARAGRAPH TRANSLATOR
+# ======================
+elif st.session_state.mode == "paragraph":
 
-    # 1. Body paragraphs
-    for para in doc.paragraphs:
-        translate_paragraph(para, target)
-        tick()
+    if st.button("← BACK TO HOME"):
+        st.session_state.mode = None
+        st.rerun()
 
-    # 2. Body tables
-    for table in doc.tables:
-        for row in table.rows:
-            for cell in row.cells:
-                for para in cell.paragraphs:
-                    translate_paragraph(para, target)
-                    tick()
-
-    # 3. Headers & Footers
-    for section in doc.sections:
-        for hdr in [section.header, section.footer,
-                    section.even_page_header, section.even_page_footer,
-                    section.first_page_header, section.first_page_footer]:
-            try:
-                for para in hdr.paragraphs:
-                    translate_paragraph(para, target)
-                    tick()
-                for table in hdr.tables:
-                    for row in table.rows:
-                        for cell in row.cells:
-                            for para in cell.paragraphs:
-                                translate_paragraph(para, target)
-                                tick()
-            except Exception:
-                pass
-
-    # 4. Text boxes (w:txbx) — HSE form fields
-    # Each text box is checked individually: boxes containing the logo are skipped,
-    # while boxes containing text fields (Date, From, Re: etc.) are translated.
-    for txbx in doc.element.iter(qn("w:txbx")):
-        if not element_has_image(txbx):
-            translate_xml_runs(txbx, target)
-        for _ in txbx.iter(qn("w:p")):
-            tick()
-
-    # 5. Content controls (w:sdt) — structured fields
-    for sdt in doc.element.iter(qn("w:sdt")):
-        if not element_has_image(sdt):
-            translate_xml_runs(sdt, target)
-        for _ in sdt.iter(qn("w:p")):
-            tick()
-
-    # 6. Lock all table layouts so translated text cannot shift the logo cell
-    for table in doc.tables:
-        lock_table_layout(table)
-    for section in doc.sections:
-        for hdr in [section.header, section.footer,
-                    section.even_page_header, section.even_page_footer,
-                    section.first_page_header, section.first_page_footer]:
-            try:
-                for table in hdr.tables:
-                    lock_table_layout(table)
-            except Exception:
-                pass
-
-    # Save
-    output = BytesIO()
-    doc.save(output)
-    output.seek(0)
-
-    progress.progress(1.0)
-    eta_text.empty()
-    status_msg.success("✓ Translation completed")
-
-    safe_name = re.sub(r'[^\w\-]', '_', target_label)
-
-    st.markdown('<div style="margin-top:1rem;">', unsafe_allow_html=True)
-    st.download_button(
-        "⬇  DOWNLOAD TRANSLATED DOCX",
-        data=output,
-        file_name=f"translated_{safe_name}.docx",
-        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    st.markdown('<div class="card"><div class="card-label">01 — Paste Your Text</div>', unsafe_allow_html=True)
+    input_text = st.text_area(
+        "Paste text here",
+        height=220,
+        placeholder="Paste the paragraph or text you want to translate…",
+        label_visibility="collapsed",
     )
     st.markdown('</div>', unsafe_allow_html=True)
 
-elif run_btn and not uploaded_file:
-    st.warning("⚠ Please upload a DOCX file first.")
+    st.markdown('<div class="card"><div class="card-label">02 — Select Target Language</div>', unsafe_allow_html=True)
+    target_label_p = st.selectbox("Language", list(languages.keys()), key="para_lang", label_visibility="collapsed")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    if st.button("▶  TRANSLATE TEXT"):
+        if not input_text or not input_text.strip():
+            st.warning("⚠ Please paste some text first.")
+        else:
+            target_p = languages[target_label_p]
+            with st.spinner("Translating…"):
+                result = safe_translate(input_text.strip(), target_p)
+
+            st.markdown(f'<div class="result-label">Translation — {target_label_p}</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="result-box">{result}</div>', unsafe_allow_html=True)
+
+            st.markdown('<div style="margin-top:1rem;">', unsafe_allow_html=True)
+            st.download_button(
+                "⬇  DOWNLOAD AS .TXT",
+                data=result.encode("utf-8"),
+                file_name=f"translated_{re.sub(r'[^\w]','_', target_label_p)}.txt",
+                mime="text/plain",
+            )
+            st.markdown('</div>', unsafe_allow_html=True)
+
+# ======================
+# PAGE: DOCX TRANSLATOR
+# ======================
+elif st.session_state.mode == "docx":
+
+    if st.button("← BACK TO HOME"):
+        st.session_state.mode = None
+        st.rerun()
+
+    st.markdown('<div class="card"><div class="card-label">01 — Upload Document</div>', unsafe_allow_html=True)
+    uploaded_file = st.file_uploader("Drop your DOCX here", type=["docx"], label_visibility="collapsed")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="card"><div class="card-label">02 — Select Target Language</div>', unsafe_allow_html=True)
+    target_label = st.selectbox("Language", list(languages.keys()), label_visibility="collapsed")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    run_btn = st.button("▶  TRANSLATE DOCUMENT")
+
+    if run_btn and uploaded_file:
+        target = languages[target_label]
+        doc    = Document(uploaded_file)
+
+        total_blocks = count_all_blocks(doc)
+        state        = {"completed": 0}
+        start_time   = time.time()
+
+        st.markdown(f"""
+        <div class="stats-row">
+            <div class="stat-box">
+                <div class="stat-number">{total_blocks}</div>
+                <div class="stat-label">Blocks</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">{len(WIND_GLOSSARY.get(target, {}))} </div>
+                <div class="stat-label">Glossary Terms</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">{target.upper()}</div>
+                <div class="stat-label">Target Lang</div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        progress   = st.progress(0)
+        eta_text   = st.empty()
+        status_msg = st.empty()
+        status_msg.info("⚙ Translating — all terminology will be corrected automatically…")
+
+        def tick():
+            state["completed"] += 1
+            c   = state["completed"]
+            pct = min(c / total_blocks, 1.0)
+            progress.progress(pct)
+            elapsed   = time.time() - start_time
+            remaining = total_blocks - c
+            if c > 0 and remaining > 0:
+                eta_text.markdown(
+                    f'<span style="font-family:JetBrains Mono,monospace;font-size:0.82rem;'
+                    f'color:#4a6080;">⏳ {int(pct*100)}% · ETA {format_eta((elapsed/c)*remaining)}'
+                    f' · {c}/{total_blocks} blocks</span>',
+                    unsafe_allow_html=True,
+                )
+
+        for para in doc.paragraphs:
+            translate_paragraph(para, target)
+            tick()
+
+        for table in doc.tables:
+            for row in table.rows:
+                for cell in row.cells:
+                    for para in cell.paragraphs:
+                        translate_paragraph(para, target)
+                        tick()
+
+        for section in doc.sections:
+            for hdr in [section.header, section.footer,
+                        section.even_page_header, section.even_page_footer,
+                        section.first_page_header, section.first_page_footer]:
+                try:
+                    for para in hdr.paragraphs:
+                        translate_paragraph(para, target)
+                        tick()
+                    for table in hdr.tables:
+                        for row in table.rows:
+                            for cell in row.cells:
+                                for para in cell.paragraphs:
+                                    translate_paragraph(para, target)
+                                    tick()
+                except Exception:
+                    pass
+
+        for txbx in doc.element.iter(qn("w:txbx")):
+            if not element_has_image(txbx):
+                translate_xml_runs(txbx, target)
+            for _ in txbx.iter(qn("w:p")):
+                tick()
+
+        for sdt in doc.element.iter(qn("w:sdt")):
+            if not element_has_image(sdt):
+                translate_xml_runs(sdt, target)
+            for _ in sdt.iter(qn("w:p")):
+                tick()
+
+        for table in doc.tables:
+            lock_table_layout(table)
+        for section in doc.sections:
+            for hdr in [section.header, section.footer,
+                        section.even_page_header, section.even_page_footer,
+                        section.first_page_header, section.first_page_footer]:
+                try:
+                    for table in hdr.tables:
+                        lock_table_layout(table)
+                except Exception:
+                    pass
+
+        output = BytesIO()
+        doc.save(output)
+        output.seek(0)
+
+        progress.progress(1.0)
+        eta_text.empty()
+        status_msg.success("✓ Translation completed")
+
+        safe_name = re.sub(r'[^\w\-]', '_', target_label)
+
+        st.markdown('<div style="margin-top:1rem;">', unsafe_allow_html=True)
+        st.download_button(
+            "⬇  DOWNLOAD TRANSLATED DOCX",
+            data=output,
+            file_name=f"translated_{safe_name}.docx",
+            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        )
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    elif run_btn and not uploaded_file:
+        st.warning("⚠ Please upload a DOCX file first.")
 
 # ======================
 # FOOTER
