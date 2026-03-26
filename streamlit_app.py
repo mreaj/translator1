@@ -789,11 +789,12 @@ elif st.session_state.mode == "paragraph":
             st.markdown(f'<div class="result-label">Translation — {target_label_p}</div>', unsafe_allow_html=True)
             st.markdown(f'<div class="result-box">{result}</div>', unsafe_allow_html=True)
 
+            safe_name_p = re.sub(r'[^\w]', '_', target_label_p)
             st.markdown('<div style="margin-top:1rem;">', unsafe_allow_html=True)
             st.download_button(
                 "⬇  DOWNLOAD AS .TXT",
                 data=result.encode("utf-8"),
-                file_name=f"translated_{re.sub(r'[^\w]','_', target_label_p)}.txt",
+                file_name=f"translated_{safe_name_p}.txt",
                 mime="text/plain",
             )
             st.markdown('</div>', unsafe_allow_html=True)
